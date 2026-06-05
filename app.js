@@ -58,22 +58,16 @@ function bindAllTerms(){ document.querySelectorAll('.term, .tinfo').forEach(bind
 /* ---------- HELPERS ---------- */
 const pct = (v,d=1)=> (v>0?'+':'')+v.toFixed(d)+'%';
 const fmt = (v,d=1)=> v.toFixed(d);
-function deltaTag(now, was, unit='%', invert=false){
-  const diff = now - was;
-  if(Math.abs(diff)<0.005) return `<div class="delta flat">no change vs original</div>`;
-  const good = invert ? diff<0 : diff>0;
-  const cls = diff>0?'up':'down';
-  return `<div class="delta ${cls}">${diff>0?'+':''}${diff.toFixed(2)}${unit} vs original</div>`;
-}
+
 
 /* ---------- KPI CARDS ---------- */
 function renderKPIs(){
-  const v = D.versions[current], o = D.versions['Original'].stats, s = v.stats, p = v.projection;
+  const v = D.versions[current], s = v.stats, p = v.projection;
   const cards = [
-    {label:'Annual return', term:'cagr', val:pct(s.cagr*100,2), sub:'historical (CAGR)', d:deltaTag(s.cagr*100,o.cagr*100,'%')},
-    {label:'Risk', term:'volatility', val:fmt(s.vol*100,2)+'%', sub:'yearly volatility', d:deltaTag(s.vol*100,o.vol*100,'%',true)},
-    {label:'Return for risk', term:'sharpe', val:fmt(s.sharpe,2), sub:'Sharpe ratio', d:deltaTag(s.sharpe,o.sharpe,'')},
-    {label:'Worst drop', term:'drawdown', val:fmt(s.max_dd*100,1)+'%', sub:'peak-to-trough', d:deltaTag(s.max_dd*100,o.max_dd*100,'%')},
+    {label:'Annual return', term:'cagr', val:pct(s.cagr*100,2), sub:'historical (CAGR)', d:''},
+    {label:'Risk', term:'volatility', val:fmt(s.vol*100,2)+'%', sub:'yearly volatility', d:''},
+    {label:'Return for risk', term:'sharpe', val:fmt(s.sharpe,2), sub:'Sharpe ratio', d:''},
+    {label:'Worst drop', term:'drawdown', val:fmt(s.max_dd*100,1)+'%', sub:'peak-to-trough', d:''},
     {label:'Typical future', term:'median', val:pct(p.ann_pct.p50,1)+'/yr', sub:'median 10y outlook', d:''},
     {label:'Chance of loss', term:'projection', val:fmt(p.prob_neg,1)+'%', sub:'over 10 years', d:''},
   ];
@@ -325,10 +319,6 @@ function renderAll(){
 }
 
 /* ---------- EVENTS ---------- */
-document.querySelectorAll('.vbtn').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.vbtn').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active'); current=b.dataset.version; renderAll();
-}));
 document.querySelectorAll('#allocToggle button').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('#allocToggle button').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); allocMode=b.dataset.mode; renderAlloc();
