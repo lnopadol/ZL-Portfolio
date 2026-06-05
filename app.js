@@ -117,9 +117,10 @@ function renderFX(){
   const v=D.versions[current];
   const ctx=document.getElementById('fxChart');
   if(charts.fx) charts.fx.destroy();
-  charts.fx=new Chart(ctx,{type:'doughnut',data:{labels:['Currency-hedged','Foreign-currency / THB'],
+  const fxLabel={id:'fxLabel',afterDraw(chart){const{ctx:cx,chartArea:{left,right,top,bottom}}=chart;const cxMid=(left+right)/2,cyMid=(top+bottom)/2;cx.save();cx.font='600 13px Inter';cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#16293f';cx.font='600 20px Fraunces';cx.fillText(v.fx.hedged+' / '+v.fx.unhedged,cxMid,cyMid-6);cx.font='500 11px Inter';cx.fillStyle='#5b6472';cx.fillText('hedged / unhedged',cxMid,cyMid+14);cx.restore();}};
+  charts.fx=new Chart(ctx,{type:'doughnut',data:{labels:['Currency-hedged (protected)','Foreign-currency / THB'],
     datasets:[{data:[v.fx.hedged,v.fx.unhedged],backgroundColor:[COL.navy,COL.gold],borderColor:'#fff',borderWidth:2.5}]},
-    options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}%`}}},responsive:true,maintainAspectRatio:false}});
+    options:{cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.parsed}%`}}},responsive:true,maintainAspectRatio:false},plugins:[fxLabel]});
   document.getElementById('fxLegend').innerHTML=
     `<div class="lg"><span class="sw" style="background:${COL.navy}"></span>Hedged ${v.fx.hedged}%</div>
      <div class="lg"><span class="sw" style="background:${COL.gold}"></span>Unhedged ${v.fx.unhedged}%</div>`;
