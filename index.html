@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Junior Portfolio — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="tooltip" class="floating-tip" role="status" aria-live="polite"></div>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 40 40" fill="none" aria-label="Portfolio logo">
+        <rect x="2" y="2" width="36" height="36" rx="9" stroke="currentColor" stroke-width="2.4"/>
+        <path d="M10 27 L17 18 L23 23 L30 12" stroke="var(--gold)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="30" cy="12" r="2.6" fill="var(--gold)"/>
+      </svg>
+      <div>
+        <div class="brand-title">Junior&rsquo;s Portfolio</div>
+        <div class="brand-sub">10-year history &amp; 10-year outlook</div>
+      </div>
+    </div>
+    <div class="version-toggle" role="group" aria-label="Choose portfolio version">
+      <span class="toggle-label">Showing:</span>
+      <button class="vbtn active" data-version="Junior-1">Revised (Junior-1)</button>
+      <button class="vbtn" data-version="Original">Original</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- INTRO -->
+  <section class="intro card">
+    <p class="lede">This dashboard explains a real investment portfolio built for a friend &mdash; in plain language. It mixes 10 funds across stocks, bonds, cash, and &ldquo;real assets&rdquo; like commodities. Below you&rsquo;ll see how this mix would have performed over the <strong>last 10 years</strong> and a range of possibilities for the <strong>next 10 years</strong>, assuming today&rsquo;s high political and economic uncertainty continues.</p>
+    <p class="muted small">Hover or tap any <span class="term">underlined term</span> for a plain-English explanation. Use the toggle at the top right to compare the <strong>Original</strong> mix with the <strong>Revised (Junior-1)</strong> mix. Currency basis: Thai baht (THB).</p>
+  </section>
+
+  <!-- KPIs -->
+  <h2 class="section-h">At a glance <span class="h-note">key numbers for the period Jun 2016 &ndash; Jun 2026</span></h2>
+  <section class="kpi-grid" id="kpiGrid"></section>
+
+  <!-- ALLOCATION -->
+  <h2 class="section-h">What&rsquo;s in the portfolio</h2>
+  <section class="two-col">
+    <div class="card">
+      <div class="card-head">
+        <h3>Allocation by <span class="term" data-term="sleeve">sleeve</span></h3>
+        <div class="mini-toggle" id="allocToggle">
+          <button class="active" data-mode="sleeve">By group</button>
+          <button data-mode="fund">By fund</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="allocChart"></canvas></div>
+      <p class="muted small" id="allocCaption"></p>
+    </div>
+    <div class="card">
+      <h3>Currency exposure <span class="term" data-term="fx">(FX)</span></h3>
+      <div class="chart-box small"><canvas id="fxChart"></canvas></div>
+      <p class="muted small">Part of the portfolio is <span class="term" data-term="hedged">currency-hedged</span> back to Thai baht (protects against the baht strengthening). The rest carries foreign-currency risk.</p>
+      <div id="fxLegend" class="fx-legend"></div>
+    </div>
+  </section>
+
+  <!-- BACKTEST GROWTH -->
+  <h2 class="section-h">How it would have grown <span class="h-note">the <span class="term" data-term="backtest">backtest</span></span></h2>
+  <section class="card">
+    <h3>Growth of every 1 baht invested</h3>
+    <p class="muted small">If you put in 1 baht at the start (mid-2016), this is what it would be worth over time &mdash; compared with two simple benchmarks. Higher isn&rsquo;t automatically &ldquo;better&rdquo;: the smoother lines took much less risk to get there.</p>
+    <div class="chart-box tall"><canvas id="growthChart"></canvas></div>
+    <div class="legend-row" id="growthLegend"></div>
+  </section>
+
+  <!-- DRAWDOWN + ANNUAL -->
+  <section class="two-col">
+    <div class="card">
+      <h3>The scary moments <span class="term" data-term="drawdown">(drawdowns)</span></h3>
+      <p class="muted small">How far the portfolio fell from its previous high point, and how long it stayed underwater. Shallower dips = easier to hold through.</p>
+      <div class="chart-box"><canvas id="ddChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Year-by-year returns</h3>
+      <p class="muted small">Gain or loss each calendar year. Green = up, red = down. Notice how few and how shallow the red years are.</p>
+      <div class="chart-box"><canvas id="annualChart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- PROJECTION -->
+  <h2 class="section-h">What might happen next <span class="h-note">the 10-year <span class="term" data-term="projection">projection</span></span></h2>
+  <section class="card">
+    <h3>Range of possible outcomes</h3>
+    <p class="muted small">Using a <span class="term" data-term="montecarlo">Monte Carlo</span> simulation (50,000 imagined futures) across five economic scenarios. The dark line is the typical (median) outcome; the shaded bands show good and bad cases. Values are a multiple of what you start with.</p>
+    <div class="chart-box tall"><canvas id="projChart"></canvas></div>
+    <div class="proj-stats" id="projStats"></div>
+  </section>
+
+  <section class="card">
+    <h3>The five scenarios we tested</h3>
+    <p class="muted small">Each future was assigned a probability. &ldquo;High uncertainty&rdquo; means we gave real weight to the bad outcomes, not just the rosy ones.</p>
+    <div class="scenario-table" id="scenarioTable"></div>
+  </section>
+
+  <!-- RISK/RETURN SCATTER + CORRELATION -->
+  <h2 class="section-h">A closer look at the building blocks</h2>
+  <section class="two-col">
+    <div class="card">
+      <h3>Risk vs. reward of each fund</h3>
+      <p class="muted small">Each bubble is one fund. Up = higher historical return. Right = more <span class="term" data-term="volatility">ups and downs (risk)</span>. Bigger bubble = bigger slice of the portfolio. The best spots are top-left (high return, low risk).</p>
+      <div class="chart-box"><canvas id="scatterChart"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Do the funds move together? <span class="term" data-term="correlation">(correlation)</span></h3>
+      <p class="muted small">Dark = the two funds tend to rise and fall together (little diversification). Pale = they move independently (good diversification). The real diversifiers are the pale ones.</p>
+      <div id="corrHeatmap" class="heatmap"></div>
+      <div class="heat-scale"><span>Move together</span><div class="heat-bar"></div><span>Move apart</span></div>
+    </div>
+  </section>
+
+  <!-- HOLDINGS TABLE -->
+  <h2 class="section-h">Full holdings <span class="h-note">click a column to sort</span></h2>
+  <section class="card table-card">
+    <div class="table-scroll">
+      <table id="holdingsTable">
+        <thead><tr>
+          <th data-sort="ticker">Fund</th>
+          <th data-sort="sleeve">Group</th>
+          <th data-sort="weight" class="num">Weight %</th>
+          <th data-sort="asset">What it holds</th>
+          <th data-sort="fx">Currency</th>
+          <th data-sort="cagr" class="num">10y return %</th>
+          <th data-sort="vol" class="num">Risk %</th>
+          <th data-sort="max_dd" class="num">Worst drop %</th>
+          <th data-sort="role">Why it&rsquo;s here</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- COMMENTS -->
+  <h2 class="section-h">Plain-language notes on the choices</h2>
+  <section class="notes-grid" id="notesGrid"></section>
+
+  <!-- GLOSSARY -->
+  <h2 class="section-h">Glossary <span class="h-note">every term, explained simply</span></h2>
+  <section class="card glossary" id="glossary"></section>
+
+  <footer class="disclaimer">
+    <p>This is research and analysis only, not personalized financial advice. Past performance and backtests do not guarantee future results. Projections are probabilistic simulations, not predictions. Consult a qualified financial advisor before making investment decisions.</p>
+    <p class="muted small">Backtest period: Jun 2016 &ndash; Jun 2026 (121 monthly observations), net of estimated fund fees and hedging costs. Returns modeled using representative index/ETF proxies for each fund. Currency basis: THB.</p>
+  </footer>
+
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
