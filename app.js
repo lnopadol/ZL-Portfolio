@@ -297,14 +297,6 @@ const NOTES={
     {v:'neutral',h:'Lower risk, lower return',p:'With more bonds and less in stocks/real-assets, the original mix is a touch calmer (8.95% risk) but earns a touch less (7.98%/yr) than the revised version.'},
   ],
 };
-function renderNotes(){
-  document.getElementById('notesGrid').innerHTML=NOTES[current].map(n=>`
-    <div class="note">
-      <span class="verdict v-${n.v}">${n.v==='good'?'\u2713 Sound move':n.v==='watch'?'\u26a0 Watch this':'\u2022 Context'}</span>
-      <h4>${n.h}</h4><p>${n.p}</p>
-    </div>`).join('');
-}
-
 /* ---------- GLOSSARY ---------- */
 function renderGlossary(){
   document.getElementById('glossary').innerHTML=Object.values(TERMS).map(([t,d])=>`
@@ -314,7 +306,7 @@ function renderGlossary(){
 /* ---------- MASTER RENDER ---------- */
 function renderAll(){
   renderKPIs(); renderAlloc(); renderFX(); renderGrowth(); renderDD(); renderAnnual();
-  renderProjection(); renderScenarios(); renderScatter(); renderHeatmap(); renderTable(); renderNotes();
+  renderProjection(); renderScenarios(); renderScatter(); renderHeatmap(); renderTable();
   bindAllTerms();
 }
 
